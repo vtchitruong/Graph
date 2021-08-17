@@ -1,8 +1,35 @@
 #include <bits/stdc++.h>
 
+#define inputFile "lr4.inp"
+#define outputFile "lr4.out"
+
 using namespace std;
 
+int nRow, mCol; // total rows and columns
 vector<vector<int>> g; // grid, graph
+
+void Input()
+{
+    ifstream f;
+    f.open(inputFile);
+
+    f >> nRow >> mCol;
+
+    g.resize(nRow); // init rows of grid
+    for (int r = 0; r < nRow; ++r)
+    {
+        g[r].resize(mCol); // init cols of each row in grid
+
+        int x;
+        for (int c = 0; c < mCol; ++c)
+        {
+            f >> x;
+            g[r][c] = x;
+        }
+    }
+
+    f.close();
+}
 
 int count(int r, int c, int max_r, int max_c)
 {
@@ -28,7 +55,7 @@ int count(int r, int c, int max_r, int max_c)
     return res;
 }
 
-int maxRegion(int n, int m, vector<vector<int>> grid)
+int maxRegion(int n, int m)
 {
     int cell;
     int cell_max = 0;
@@ -44,8 +71,23 @@ int maxRegion(int n, int m, vector<vector<int>> grid)
     return cell_max;
 }
 
+void Output()
+{
+    ofstream f;
+    f.open(outputFile);
+
+    int largestRegion = maxRegion(nRow, mCol);
+
+    f << largestRegion;
+
+    f.close();
+}
+
+
 int main()
 {
+    Input();
+    Output();
 
     return 0;
 }
