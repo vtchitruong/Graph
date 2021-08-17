@@ -33,9 +33,11 @@ void Input()
 
 int count(int r, int c, int max_r, int max_c)
 {
+    // out of boundaries
     if (r < 0 || r > max_r - 1 || c < 0 || c > max_c - 1)
         return 0;
-        
+    
+    // value = 0, skip
     if (g[r][c] == 0)
         return 0;
         
@@ -43,6 +45,7 @@ int count(int r, int c, int max_r, int max_c)
     
     int res = 1;
     
+    // 8 directions
     res += count(r - 1, c, max_r, max_c);
     res += count(r + 1, c, max_r, max_c);
     res += count(r, c - 1, max_r, max_c);
