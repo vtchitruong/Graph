@@ -4,9 +4,9 @@ If a node is isolated, its distance should be -1.
 Return the list in node number ascending order.
 
 ### Constraints
-2 <= n <= 1000 (node)
-1 <= m <= n(n - 1) / 2 (edge)
-1 <= u, v, start <= n
+2 <= n <= 1000 (node)  
+1 <= m <= n(n - 1) / 2 (edge)  
+1 <= u, v, start <= n  
 
 ### Sample Input
 4 2  
