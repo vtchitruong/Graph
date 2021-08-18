@@ -8,10 +8,6 @@ Return -1 if not found.
 1 <= edge <= 10^6  
 1 <= color[i] <= 10^8  
 
-Output Format
-
-Print the single integer representing the smallest path length or .
-
 ### Sample Input
 4 3  
 1 2  
