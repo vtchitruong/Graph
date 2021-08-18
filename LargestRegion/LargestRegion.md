@@ -1,8 +1,8 @@
 Find the number of cells in the largest region using DFS.
 
 ### Constraints
-0 < n, m < 10
-grid[i][j] belongs to {0, 1}
+0 < n, m < 10  
+grid[i][j] belongs to {0, 1}  
 
 ### Sample Input
 4  
