@@ -2,7 +2,7 @@ Find a path from one node to another using DFS.
 Return -1 if no path found.  
 
 ### Constraints
-0 < n < 10  (number of vertex/node)  
+0 < n < 10  (number of vertices/nodes)  
 
 ### Sample Input
 8 7 1 5  

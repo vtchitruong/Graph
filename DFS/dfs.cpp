@@ -3,9 +3,6 @@
 #define inputFile "dfs1.inp"
 #define outputFile "dfs1.out"
 
-// số đỉnh tối đa
-#define MAX 1000
-
 using namespace std;
 
 // global variables: number of vertices/nodes, number of edges, start node, finish node
