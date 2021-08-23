@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 
-#define inputFile "robotmove1.inp"
-#define outputFile "robotmove1.out"
+#define inputFile "robotmove.inp"
+#define outputFile "robotmove.out"
 
 using namespace std;
 
