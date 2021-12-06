@@ -2,12 +2,12 @@ import os
 import sys
 from collections import deque
 
-inputFile = os.path.join(sys.path[0], 'robotmove.inp')
-outputFile = os.path.join(sys.path[0], 'robotmove.out')
+input_file = os.path.join(sys.path[0], 'robotmove.inp')
+output_file = os.path.join(sys.path[0], 'robotmove.out')
 
 #-----------------------------------------------------------------------------
 def input():
-    with open(inputFile) as f:
+    with open(input_file) as f:
         global total_rows, total_cols, start, finish        
 
         # first line in input file
@@ -99,7 +99,7 @@ def output():
         
         p.append(start)
     
-    with open(outputFile, 'w') as f:        
+    with open(output_file, 'w') as f:        
         for i, cell in enumerate(reversed(p)):
             line = f'{cell[0]} {cell[1]}'
             f.write(line) if i == len(p) - 1 else f.write(line + '\n')                   
