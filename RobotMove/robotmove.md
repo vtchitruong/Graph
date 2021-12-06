@@ -23,3 +23,12 @@ It can move into the position of 0, but not the position of 1.
 The maze has row of 4 and column of 7, which is 1-based indexing.  
 The start position is [3,4] and the finish position is [2,6].  
 Each cell of the output path is listed line by line.  
+
+The output path is marked bold and italic as below.  
+
+|   | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+|---|---|---|---|---|---|---|---|
+| **1** | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
+| **2** | 0 | 0 | 1 | 0 | 1 | ***0*** | 0 |
+| **3** | 0 | 0 | 0 | ***0*** | ***0*** | ***0*** | 0 |
+| **4** | 1 | 1 | 0 | 1 | 0 | 0 | 0 |
