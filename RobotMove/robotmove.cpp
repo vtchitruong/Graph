@@ -53,8 +53,8 @@ void Spread()
     queue<pair<int, int>> q;
     q.push(start);
     
-    pair<int, int> current;
-    pair<int, int> next;
+    pair<int, int> current; // current cell of the robot
+    pair<int, int> next; // temp cell for next move
 
     while (!q.empty())
     {
@@ -117,7 +117,7 @@ void Output()
 {
     stack<pair<int, int>> p; // path
 
-    if (trace[finish.first][finish.second] == 'N')
+    if (trace[finish.first][finish.second] == 'N') // no path found
     {
         p.push({-1, -1});
     }
