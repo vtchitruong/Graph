@@ -1,4 +1,8 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <stack>
+#include <utility>
 
 #define inputFile "forest.inp"
 #define outputFile "forest.out"
@@ -7,23 +11,24 @@ using namespace std;
 
 const int MAX = 1000;
 
-int totalRow, totalCol;
+int totalRows, totalCols;
 vector<string> g; // graph
-int Er, Ec; // the position of the explorer
+pair<int, int> start, finish; // the  position of the explorer
 
 vector<vector<int>> trace;
-vector<pair<int,int>> step;
+vector<pair<int,int>> steps;
 
+//-----------------------------------------------------------------------------
 void Input()
 {
     ifstream f;
     f.open(inputFile);
 
-    f >> totalRow >> totalCol;
+    f >> totalRows >> totalCols;
 
     // read each row, then add them to vector g
     string eachRow;
-    for (int r = 0; r < totalRow; ++r)
+    for (int r = 0; r < totalRows; ++r)
     {
         f >> eachRow;
         g.push_back(eachRow);
@@ -32,83 +37,83 @@ void Input()
     f.close();
 }
 
+//-----------------------------------------------------------------------------
 void Init()
 {
-    // step
-    step.push_back({-1, 0});
-    step.push_back({1, 0});
-    step.push_back({0, -1});
-    step.push_back({0, 1});
-
-    // trace
-    trace.resize(totalRow);
-    for (int r = 0; r < totalRow; ++r)
+    // locate the start position of the explorer
+    for (int r = 0; r < totalRows; r++)
     {
-        vector<int> tmp(totalCol, -1);
-        trace[r] = tmp;
-    }
+        int c = g[r].find('E');
 
-    // locate the explorer
-    for (int r = 0; r < totalRow; r++)
-    {
-        int colFound = g[r].find('E');
-
-        if (!(colFound == string::npos))
+        if (!(c == string::npos))
         {
-            Er = r;
-            Ec = colFound;
+            start.first = r;
+            start.second = c;
             break;
         }
     }
-}
 
-void dfs(int &currentEr, int &currentEc)
-{
-    // the explorer reaches the forest outline
-    if (currentEr == 0 || currentEr == totalRow - 1 || currentEc == 0 || currentEc == totalCol - 1)
-        return;
+    // 4 types of steps
+    steps.push_back({-1, 0}); // up
+    steps.push_back({1, 0}); // down
+    steps.push_back({0, -1}); // left
+    steps.push_back({0, 1}); // right
 
-    int nextEr, nextEc;
-
-    for (int i = 0; i < step.size(); ++i)
+    // for output tracing
+    trace.resize(totalRows);
+    for (int r = 0; r < totalRows; ++r)
     {
-        nextEr = currentEr + step[i].first;
-        nextEc = currentEc + step[i].second;
-
-        if (nextEr >= 0 && nextEr < totalRow && nextEc >= 0 && nextEc < totalCol)
-        {
-            if (g[nextEr][nextEc] == 'O') // he can move
-            {
-                if (trace[nextEr][nextEc] == -1)
-                {
-                    trace[nextEr][nextEc] = (MAX + currentEc) * MAX + currentEr;
-                    
-                    currentEr = nextEr;
-                    currentEc = nextEc;
-                    dfs(currentEr, currentEc);
-                }
-            }
-        }
+        trace[r].resize(totalCols, -1); // -1 means not yet visited        
     }
 }
 
-void Output()
+//-----------------------------------------------------------------------------
+void DFS(pair<int, int> current)
 {
-    int _r;
-    int _c; // temporary position
+    // the explorer reaches the forest boundaries
+    if (current.first == 0 || current.first == totalRows - 1 || current.second == 0 || current.second == totalCols - 1)
+    {
+        finish.first = current.first; // the finish position at the boundaries
+        finish.second = current.second;
+        return;
+    }    
 
+    pair<int, int> next;
+
+    // try each step for next move
+    for (int s = 0; s < steps.size(); ++s)
+    {
+        next.first = current.first + steps[s].first;
+        next.second = current.second + steps[s].second;
+
+        if (next.first >= 0 && next.first < totalRows && next.second >= 0 && next.second < totalCols) // he's still in bound
+            if (g[next.first][next.second] == 'O') // he can move to the next position
+                if (trace[next.first][next.second] == -1) // the next position is not yet visited
+                {
+                    trace[next.first][next.second] = (MAX + current.second) * MAX + current.first;
+                    
+                    current.first = next.first;
+                    current.second = next.second;
+                    DFS(current);
+                }
+    }
+}
+
+//-----------------------------------------------------------------------------
+void Output()
+{    
     stack<pair<int, int>> p; // path
 
-    p.push({Er, Ec}); // the explorer is standing at the boundary
-    while (!(trace[Er][Ec] == -1))
+    p.push(finish); // the explorer is standing at the boundary
+    while (!(trace[finish.first][finish.second] == -1))
     {
-        _r = trace[Er][Ec] % MAX;
-        _c = trace[Er][Ec] / MAX - MAX;
+        int r = trace[finish.first][finish.second] % MAX;
+        int c = trace[finish.first][finish.second] / MAX - MAX;
 
-        p.push({_r, _c});
+        p.push({r, c});
 
-        Er = _r;
-        Ec = _c;
+        finish.first = r;
+        finish.second = c;
     }
 
     ofstream f;
@@ -124,11 +129,12 @@ void Output()
     f.close();
 }
 
+//-----------------------------------------------------------------------------
 int main()
 {
     Input();
     Init();
-    dfs(Er, Ec);
+    DFS(start);
     Output();   
 
     return 0;
