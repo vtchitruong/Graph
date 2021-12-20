@@ -27,3 +27,11 @@ XOXXX
 ### Explanation
 The forest has row of 5 and column of 5.  
 The output path is listed from his postion (1,1) to the edge, which is (4,1).  
+<br/>
+|   | 0 | 1 | 2 | 3 | 4 |
+|---|:-:|:-:|:-:|:-:|:-:|
+| **0** | X | X | X | X | X |
+| **1** | X | E | O | O | X |
+| **2** | X | X | X | O | X |
+| **3** | X | O | O | O | X |
+| **4** | X | O | X | X | X |
