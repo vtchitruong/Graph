@@ -1,104 +1,132 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <stack>
 
-#define inputFile "dfs1.inp"
-#define outputFile "dfs1.out"
+#define inputFile "dfs.inp"
+#define outputFile "dfs.out"
 
 using namespace std;
 
-// global variables: number of vertices/nodes, number of edges, start node, finish node
+// số đỉnh, số cạnh, đỉnh xuất phát, đỉnh đích
 int vertex, edge, start, finish;
 
-// adjacency matrix
+// danh sách kề
 vector<vector<int>> a;
 
-vector<int> trace; // trace[v] = u, preceding of v is u
+// Mảng dùng để truy ngược, trace[v] = u nghĩa là trước đỉnh v là đỉnh u
+vector<int> trace;
 
 void Input()
 {
     ifstream f;
     f.open(inputFile);
 
-    // global variables
     f >> vertex >> edge >> start >> finish;
 
-    // init adjacent matrix
+    // Khởi tạo danh sách đỉnh kề
     a.resize(vertex + 1);
 
     int u, v;
     
-    // read each line in turn, then create and add a vector to a[i]
+    // Đọc từng dòng và nạp các đỉnh vào hàng a[u] tương ứng
+    // Hàng a[u] chứa các đỉnh v kề với đỉnh u
     for (int i = 1; i < edge + 1; ++i)
     {
         f >> u >> v;
         a[u].push_back(v);
-        a[v].push_back(u);
     }
 
     f.close();
 }
 
+// Hàm khởi tạo
 void Init()
 {
+    // Khởi tạo mảng trace gồm toàn 0, nghĩa là các đỉnh trong trace đều chưa có đỉnh liền trước
     trace.resize(vertex + 1, 0);
+    
+    // Trước đỉnh start không có đỉnh nào
     trace[start] = -1;
 }
 
-void dfs(int current) // current node to start
+// Hàm Dfs thực hiện đệ quy, xem current là đỉnh gốc
+void Dfs(int current)
 {
-    // iterate all adjaccent nodes of node s
+    // Duyệt các đỉnh kề với đỉnh current
     for (vector<int>::iterator i = a[current].begin(); i != a[current].end(); ++i)
     {
-        if (!trace[*i]) // not yet visited
+        // Nếu đỉnh *i chưa ghé thăm thì đánh dấu ghé thăm *i bằng mảng trace
+        // rồi xem *i là đỉnh gốc, gọi đệ quy tiếp từ đỉnh *i
+        if (!trace[*i])
         {
             trace[*i] = current;
-            dfs(*i);
+            Dfs(*i);
         }
     }
+}
+
+// Hàm Process tổng hợp các thao tác cần thực hiện
+void Process()
+{
+    // Khởi tạo mảng trace
+    Init();
+
+    // Thực hiện duyệt theo chiều sâu, xuất phát từ đỉnh start
+    Dfs(start);
 }
 
 void Output()
 {
-    stack<int> p; // path result
+    // Khai báo stack path lưu các đỉnh của đường đi cần tìm
+    stack<int> path; 
 
-    if (!trace[finish]) // no preceding of finish node
+    // Dùng tmpFinish để không làm mất giá trị của finish khi truy ngược
+    int tmpFinish = finish;
+
+    // Nếu có đường đi đến đỉnh finish thì mới thực hiện truy ngược trace
+    if (trace[tmpFinish])
     {
-        p.push(-1);
-    }
-    else
-    {
-        // using loop to trace back from finish node to start node
-        while (!(start == finish))
+        // Dựa vào mảng trace, cho tmpFinish "lùi" dần về start
+        while (tmpFinish != start)
         {
-            p.push(finish);
-            finish = trace[finish];
+            // Trong khi chưa đụng đỉnh start, thì nạp đỉnh tmpFinish vào đường đi
+            path.push(tmpFinish);
+
+            // "Lùi" tmpFinish về đỉnh liền trước đó
+            tmpFinish = trace[tmpFinish];
         }
 
-        p.push(start);
+        // Nạp đỉnh start vào đường đi
+        path.push(start);
     }
 
     ofstream f;
-    f.open(outputFile);
+    f.open(outputFile);    
 
-    if (p.top() == -1)
+    if (path.empty())
     {
+        // Nếu không có phần tử nào trong stack path
+        // thì in ra -1, nghĩa là không có đường đi
         f << -1;
     }
     else
     {
-        while (!p.empty())
+        // Duyệt stack path và ghi các đỉnh vào file
+        while (!path.empty())
         {
-            f << p.top() << ' ';
-            p.pop();
+            f << path.top() << " --> ";
+            path.pop();
         }
     }
+
     f.close();
 }
 
 int main()
 {
     Input();
-    Init();
-    dfs(start);
+    Process();
     Output();
 
     return 0;
