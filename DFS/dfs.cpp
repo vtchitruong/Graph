@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <stack>
+#include <iomanip>
 
 #define inputFile "dfs.inp"
 #define outputFile "dfs.out"
@@ -14,7 +15,7 @@ int vertex, edge, start, finish;
 // danh sách kề
 vector<vector<int>> a;
 
-// Mảng dùng để truy ngược, trace[v] = u nghĩa là trước đỉnh v là đỉnh u
+// Mảng dùng để truy ngược, trace[u] = v nghĩa là trước đỉnh u là đỉnh v
 vector<int> trace;
 
 void Input()
@@ -76,6 +77,7 @@ void Process()
     Dfs(start);
 }
 
+// Hàm in kết quả ra file
 void Output()
 {
     // Khai báo stack path lưu các đỉnh của đường đi cần tìm
@@ -112,10 +114,13 @@ void Output()
     }
     else
     {
-        // Duyệt stack path và ghi các đỉnh vào file
+        // Trong khi stack path vẫn còn phần tử
         while (!path.empty())
         {
+            // thì in ra phần tử nằm ở đầu stack
             f << path.top() << " --> ";
+
+            // rồi xóa bỏ phần tử đầu stack này
             path.pop();
         }
     }
@@ -123,11 +128,29 @@ void Output()
     f.close();
 }
 
+// Hàm in ra console mảng trace
+void ShowTrace()
+{
+    for (int u = 1; u < vertex + 1; ++u)
+    {
+        cout << setw(4) << u << ' '; 
+    }
+
+    cout << endl;
+
+    for (int u = 1; u < vertex + 1; ++u)
+    {
+        cout << setw(4) << trace[u] << ' '; 
+    }
+}
+
 int main()
 {
     Input();
     Process();
     Output();
+
+    ShowTrace();
 
     return 0;
 }
