@@ -118,7 +118,7 @@ void Output()
         while (!path.empty())
         {
             // thì in ra phần tử nằm ở đầu stack
-            f << path.top() << " --> ";
+            f << path.top();
 
             // nếu stack path còn hơn một phần tử thì in dấu phân cách
             if (path.size() != 1)
