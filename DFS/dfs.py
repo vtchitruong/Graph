@@ -3,8 +3,8 @@ import sys
 import queue
 from collections import deque
 
-input_file = os.path.join(sys.path[0], 'bfs.inp')
-output_file = os.path.join(sys.path[0], 'bfs.out')
+input_file = os.path.join(sys.path[0], 'dfs.inp')
+output_file = os.path.join(sys.path[0], 'dfs.out')
 
 # số đỉnh, số cạnh, đỉnh xuất phát, đỉnh đích
 vertex, edge, start, finish = 0, 0, 0, 0
@@ -42,37 +42,26 @@ def init():
     trace[start] = -1
 
 
-def bfs():
-    global start
+# Hàm dfs thực hiện đệ quy, xem current là đỉnh gốc
+def dfs(current):
     global a, trace
-
-    # Khởi tạo queue, nạp đỉnh start vào queue
-    q = queue.Queue()
-    q.put(start)
-    
-    # current là biến tạm, chỉ đỉnh hiện hành
-    current = 0
-    
-    # Trong khi queue vẫn còn phần tử
-    while q.empty() == False:
-        # thì gán phần tử nằm ở đầu queue vào biến tạm current và xóa luôn khỏi queue
-        current = q.get()
         
-        # Duyệt các đỉnh kề với đỉnh current
-        for u in a[current]:
-            # Nếu đỉnh u chưa ghé thăm thì đánh dấu ghé thăm u bằng mảng trace
-            # rồi đẩy u vào queue
-            if not trace[u]:
-                trace[u] = current
-                q.put(u)
+    # Duyệt các đỉnh kề với đỉnh current
+    for u in a[current]:
+        # Nếu đỉnh u chưa ghé thăm thì đánh dấu ghé thăm u bằng mảng trace
+        # rồi xem u là đỉnh gốc, gọi đệ quy tiếp từ đỉnh u
+        if not trace[u]:
+            trace[u] = current
+            dfs(u)
 
 
 # Hàm process tổng hợp các thao tác cần thực hiện
 def process():
     # Khởi tạo mảng trace
     init()
-    # Thực hiện duyệt theo chiều rộng
-    bfs()
+
+    # Thực hiện duyệt theo chiều sâu, xuất phát từ đỉnh start
+    dfs(start)
 
 
 # Hàm in kết quả ra file
