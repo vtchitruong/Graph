@@ -124,10 +124,10 @@ void Output()
     ofstream f;
     f.open(outputFile);    
 
+    // Nếu không có phần tử nào trong stack path
+    // thì in ra -1, nghĩa là không có đường đi
     if (path.empty())
     {
-        // Nếu không có phần tử nào trong stack path
-        // thì in ra -1, nghĩa là không có đường đi
         f << -1;
     }
     else
@@ -136,7 +136,11 @@ void Output()
         while (!path.empty())
         {
             // thì in ra phần tử nằm ở đầu stack
-            f << path.top() << " --> ";
+            f << path.top();
+
+            // nếu stack path còn hơn một phần tử thì in dấu phân cách
+            if (path.size() != 1)
+                f << " --> ";
 
             // rồi xóa bỏ phần tử đầu stack này
             path.pop();
