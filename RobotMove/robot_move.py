@@ -99,12 +99,15 @@ def output():
         path.append(start)
     
     with open(output_file, 'w') as f:
-        for i in range(len(path) - 1, 0, -1):
-            cell = f'{path[i][0]} {path[i][1]}'
-            print(cell, file=f)
-        
-        cell = f'{path[0][0]} {path[0][1]}'
-        f.write(cell)
+        if not path:
+            f.write(-1)
+        else:
+            for i in range(len(path) - 1, 0, -1):
+                cell = f'{path[i][0]} {path[i][1]}'
+                print(cell, file=f)
+            
+            cell = f'{path[0][0]} {path[0][1]}'
+            f.write(cell)
 
 #-----------------------------------------------------------------------------
 if __name__ == '__main__':    
