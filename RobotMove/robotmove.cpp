@@ -1,13 +1,13 @@
 #include <bits/stdc++.h>
 
-#define inputFile "robotmove.inp"
-#define outputFile "robotmove.out"
+#define inputFile "robotmove2.inp"
+#define outputFile "robotmove2.out"
 
 using namespace std;
 
-int totalRow, totalCol;
+int rows, cols;
 pair<int,int> start, finish; // 1-based index
-vector<vector<int>> g; // graph
+vector<vector<short>> maze;
 
 vector<vector<char>> trace;
 
@@ -17,20 +17,20 @@ void Input()
     f.open(inputFile);
 
     // load data to global variables
-    f >> totalRow >> totalCol >> start.first >> start.second >> finish.first >> finish.second;
+    f >> rows >> cols >> start.first >> start.second >> finish.first >> finish.second;
     
     // read each row, then add them to vector g
     string eachRow;
-    g.resize(totalRow + 1);
-    for (int r = 1; r < totalRow + 1; ++r)
+    maze.resize(rows + 1);
+    for (int r = 1; r < rows + 1; ++r)
     {
-        g[r].resize(totalCol + 1);
+        maze[r].resize(cols + 1);
         
         f >> eachRow;
-        for (int c = 1; c < totalCol + 1; ++c)
+        for (int c = 1; c < cols + 1; ++c)
         {
             int val = eachRow[c - 1] == '0' ? 0 : 1;
-            g[r][c] = val;
+            maze[r][c] = val;
         }        
     }
     
@@ -39,16 +39,17 @@ void Input()
 
 void Init()
 {
-    // trace
-    trace.resize(totalRow + 1);
-    for (int r = 1; r < totalRow + 1; ++r)
+    trace.resize(rows + 1);
+
+    for (int r = 1; r < rows + 1; ++r)
     {
-        trace[r].resize(totalCol + 1, 'N'); // 'N' = not yet visited
+        trace[r].resize(cols + 1, 'N'); // 'N' = not yet visited
     }
+
     trace[start.first][start.second] = 'S';
 }
 
-void Spread()
+void Bfs()
 {
     queue<pair<int, int>> q;
     q.push(start);
@@ -67,7 +68,7 @@ void Spread()
         // try 4 directions in turn
         if (current.first > 1) // robot could go up
             if (trace[current.first - 1][current.second] == 'N')
-                if (g[current.first - 1][current.second] == 0)
+                if (maze[current.first - 1][current.second] == 0)
                 {
                     next = current;
                     next.first--;
@@ -76,9 +77,9 @@ void Spread()
                     trace[next.first][next.second] = 'U';
                 }
         
-        if (current.first < totalRow) // robot could go down
+        if (current.first < rows) // robot could go down
             if (trace[current.first + 1][current.second] == 'N')
-                if (g[current.first + 1][current.second] == 0)
+                if (maze[current.first + 1][current.second] == 0)
                 {
                     next = current;
                     next.first++;
@@ -89,7 +90,7 @@ void Spread()
 
         if (current.second > 1) // robot could go left
             if (trace[current.first][current.second - 1] == 'N')
-                if (g[current.first][current.second - 1] == 0)
+                if (maze[current.first][current.second - 1] == 0)
                 {
                     next = current;
                     next.second--;
@@ -98,9 +99,9 @@ void Spread()
                     trace[next.first][next.second] = 'L';
                 }
         
-        if (current.second < totalCol) // robot could go right
+        if (current.second < cols) // robot could go right
             if (trace[current.first][current.second + 1] == 'N')
-                if (g[current.first][current.second + 1] == 0)
+                if (maze[current.first][current.second + 1] == 0)
                 {
                     next = current;
                     next.second++;
@@ -115,17 +116,13 @@ void Spread()
 
 void Output()
 {
-    stack<pair<int, int>> p; // path
+    stack<pair<int, int>> path;
 
-    if (trace[finish.first][finish.second] == 'N') // no path found
+    if (trace[finish.first][finish.second] != 'N')
     {
-        p.push({-1, -1});
-    }
-    else
-    {
-        while (!(start == finish))
+        while (trace[finish.first][finish.second] != 'S')
         {
-            p.push(finish);
+            path.push(finish);
 
             switch (trace[finish.first][finish.second])
             {
@@ -139,25 +136,24 @@ void Output()
                     break;
             }
         }
-        p.push(start);
+        path.push(start);
     }
 
     ofstream f;
     f.open(outputFile);
 
-    if (p.size() == 1)
+    if (path.empty())
     {
-        f << p.top().first;
+        f << -1;
     }
     else
     {
-        while (!p.empty())
+        while (path.size() > 1)
         {
-            f << p.top().first << ' ' << p.top().second;
-            if (p.size() > 1) f << endl;
-
-            p.pop();
+            f << path.top().first << ' ' << path.top().second << endl;
+            path.pop();
         }
+        f << path.top().first << ' ' << path.top().second;
     }
 
     f.close();
@@ -167,7 +163,7 @@ int main()
 {
     Input();
     Init();  
-    Spread();
+    Bfs();
     Output();
     
     return 0;
