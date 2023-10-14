@@ -1,4 +1,8 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <queue>
+#include <stack>
 
 #define inputFile "robotmove2.inp"
 #define outputFile "robotmove2.out"
