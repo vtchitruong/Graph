@@ -1,22 +1,22 @@
 #include <iostream>
-#include <vector>
 #include <fstream>
+#include <vector>
+#include <set>
 #include <stack>
 
 #define inputFile "dijkstra.inp"
-#define outpuFile "dijkstra.out"
+#define outputFile "dijkstra.out"
 
 using namespace std;
 
-int vertices, edges, start, finish; // total number of vertices or edges
-vector<vector<int>> a; // adjacent matrix
+int vertices, edges, start, finish;
+vector<vector<pair<int, int>>> graph;
 
-vector<bool> visited;
 vector<int> d; // distance
 vector<int> trace;
-const int INF = 2E9; // infinity
 
-//-----------------------------------------------------------------------------
+const int INF = INT_MAX;
+
 void Input()
 {
     ifstream f;
@@ -24,76 +24,66 @@ void Input()
 
     f >> vertices >> edges >> start >> finish;
 
-    a.resize(vertices + 1, vector<int>(vertices + 1, INF)); // init adjacent matrix
-    
-    // read edges
-    for (int e = 0; e < edges; ++e)
+    graph.resize(vertices + 1);
+
+    int u, v, weight;
+    for (int i = 0; i < edges; ++i)
     {
-        int u, v, len; // length        
-        f >> u >> v >> len;
-        a[u][v] = len;        
+        f >> u >> v >> weight;
+        graph[u].push_back({v, weight});
     }
 
     f.close();
 }
 
-//-----------------------------------------------------------------------------
 void Init()
 {
-    // a vertex is visited or not
-    visited.resize(vertices + 1, false);
-
-    // d[v] is the minimum distance from start to v
+    // d[v] là khoảng cách ngắn nhất từ start đến v
     d.resize(vertices + 1, INF);
     d[start] = 0;
 
-    // trace[v] = u means that u is followed by v, or we have to travel from u to v
+    // trace[v] = u nghĩa là trước đỉnh v là đỉnh u
     trace.resize(vertices + 1);
 }
 
-//-----------------------------------------------------------------------------
-// Find the minimum distance in vector d of un-visited vertex
-int minDistance()
-{    
-    int min_d = INF;
-    int min_index = 0;
-    
-    for (int v = 1; v < vertices + 1; ++v)
-    {
-        if (!visited[v])
-            if (d[v] < min_d)
-            {
-                min_d = d[v];
-                min_index = v;                
-            }
-    }
-
-    return min_index;
-}
-
-//-----------------------------------------------------------------------------
 void Dijkstra()
 {
-    Init();
-
-    while (true)
+    // Khai báo biến q kiểu set, mỗi phần tử là một pair
+    // với first là khoảng cách d, second là đỉnh v.
+    // Nghĩa là, tại đỉnh v, khoảng cách ngắn nhất từ start đến v là d.
+    set<pair<int, int>> q;
+    q.insert({0, start});
+    
+    while (!q.empty())
     {
-        // find the vertex which has minimum distance from start for next travel from it
-        int u = minDistance();
-        
-        // cannot travel anymore or reach the finish
-        if (u == 0 || u == finish) break;
+        // Xét đỉnh u của phần tử đầu tiên
+        int u = q.begin()->second;
+        q.erase(q.begin());
 
-        visited[u] = true;
+        // Dừng thuật toán khi đã đến đích
+        if (u == finish)
+            break;
 
-        for (int v = 1; v < vertices + 1; ++v)
+        // Duyệt các đỉnh kề với đỉnh u
+        for (int i = 0; i < graph[u].size(); ++i)
         {
-            if (!visited[v])
-                if (d[u] + a[u][v] < d[v])
-                {
-                    d[v] = d[u] + a[u][v]; // update the minimum distance
-                    trace[v] = u; // for output path
-                }
+            int v = graph[u][i].first;
+            int w = graph[u][i].second;
+
+            if (d[u] + w < d[v])
+            {
+                // Xóa phần tử có giá trị d[v] trong hàng đợi
+                q.erase({d[v], v});
+
+                // Lưu khoảng cách ngắn nhất mới
+                d[v] = d[u] + w;
+
+                // Lưu vết
+                trace[v] = u;
+
+                // Thêm vào hàng đợi
+                q.insert({d[v], v});
+            }
         }
     }
 }
@@ -101,35 +91,31 @@ void Dijkstra()
 //-----------------------------------------------------------------------------
 void Output()
 {
-    stack<int> p; // path
+    stack<int> path;
 
-    if (d[finish] == INF) // cannot reach finish
+    if (d[finish] != INF)
     {
-        p.push(-1);
-    }
-    else
-    {
-        int f = finish; // temporary finish
+        int fn = finish; // biến tạm
 
-        // trace back from finish to start for output path       
-        while (f != start)
+        // Dựa vào mảng trace, cho fn "lùi" dần về start
+        while (fn != start)
         {
-            p.push(f);
-            f = trace[f];
+            path.push(fn);
+            fn = trace[fn];
         }
 
-        p.push(start);
+        path.push(start);
     }
 
     ofstream f;
-    f.open(outpuFile);
+    f.open(outputFile);
 
     f << d[finish] << endl;
-    while (!p.empty())
+    while (!path.empty())
     {
-        f << p.top();
-        if (p.size() != 1) f << ' ';
-        p.pop();
+        f << path.top();
+        if (path.size() != 1) f << ' ';
+        path.pop();
     }
 
     f.close();
@@ -139,8 +125,8 @@ void Output()
 int main()
 {
     Input();
+    Init();
     Dijkstra();
     Output();
-
     return 0;
 }
