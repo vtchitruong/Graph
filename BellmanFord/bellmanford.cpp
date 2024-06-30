@@ -5,8 +5,8 @@
 #include <map>
 #include <iomanip>
 
-#define inputFile "bf3.inp"
-#define outpuFile "bf3.out"
+#define inputFile "bf1.inp"
+#define outpuFile "bf1.out"
 
 using namespace std;
 
@@ -76,11 +76,7 @@ void BellmanFord()
                 }
             }
         }
-
-        Show_d();
-    }
-
-    
+    }    
 
     // Bước 2: Phát hiện chu trình mang trọng số âm
     for (int i = 0; i < numberOfEdges; ++i)
@@ -103,8 +99,6 @@ void BellmanFord()
             }
         }
     }
-
-    Show_d();
 }
 
 void Output()
