@@ -10,7 +10,7 @@ output_file = os.path.join(sys.path[0], 'dfs.out')
 vertex, edge, start, finish = 0, 0, 0, 0
 
 # danh sách kề
-a = []
+A = []
 
 # mảng dùng để truy ngược, trace[u] = v nghĩa là trước đỉnh u là đỉnh v
 trace = []
@@ -20,42 +20,39 @@ def input_data():
         global vertex, edge, start, finish        
         vertex, edge, start, finish = list(map(int, f.readline().split()))
 
-        global a
+        global A
         # Khởi tạo danh sách đỉnh kề
-        a = [[] for _ in range(vertex + 1)]
+        A = [[] for _ in range(vertex + 1)]
 
-        # Đọc từng dòng và nạp các đỉnh vào hàng a[u] tương ứng
-        # Hàng a[u] chứa các đỉnh v kề với đỉnh u
+        # Đọc từng dòng và nạp các đỉnh vào hàng A[u] tương ứng
+        # Hàng A[u] chứa các đỉnh v kề với đỉnh u
         for _ in range(edge):
             u, v = map(int, f.readline().split())
-            a[u].append(v)
+            A[u].append(v)
 
 
-# Hàm khởi tạo 
 def init():
     global trace
     
-    # Khởi tạo mảng trace gồm toàn 0, nghĩa là các đỉnh trong trace đều chưa có đỉnh liền trước
+    # Khởi tạo mảng trace gồm toàn 0, nghĩa là tất cả đỉnh đều chưa có đỉnh liền trước
     trace = [0] * (vertex + 1)
     
     # Trước đỉnh start không có đỉnh nào  
     trace[start] = -1
 
 
-# Hàm dfs thực hiện đệ quy, xem current là đỉnh gốc
 def dfs(current):
-    global a, trace
+    global A, trace
         
     # Duyệt các đỉnh kề với đỉnh current
-    for u in a[current]:
+    for u in A[current]:
         # Nếu đỉnh u chưa ghé thăm thì đánh dấu ghé thăm u bằng mảng trace
-        # rồi xem u là đỉnh gốc, gọi đệ quy tiếp từ đỉnh u
+        # rồi xem u là đỉnh gốc, gọi đệ quy đối với đỉnh u
         if not trace[u]:
             trace[u] = current
             dfs(u)
 
 
-# Hàm process tổng hợp các thao tác cần thực hiện
 def process():
     # Khởi tạo mảng trace
     init()
@@ -64,31 +61,30 @@ def process():
     dfs(start)
 
 
-# Hàm in kết quả ra file
 def output():
     # Khai báo stack path lưu các đỉnh của đường đi cần tìm
     # Module collections của Python không có kiểu stack
     # Thay vào đó deque dùng để biểu diễn cả queue lẫn stack
     path = deque()
 
-    # Dùng tmpFinish để không làm mất giá trị của finish khi truy ngược
-    tmpFinish = finish
+    # Dùng tmp_finish để không làm mất giá trị của finish khi truy ngược
+    tmp_finish = finish
     
     # Nếu có đường đi đến đỉnh finish thì mới thực hiện truy ngược trace
-    if trace[tmpFinish]:
-        # Dựa vào mảng trace, cho tmpFinish "lùi" dần về start
-        while tmpFinish != start:
-            # Trong khi chưa đụng đỉnh start, thì nạp đỉnh tmpFinish vào đường đi
-            path.append(tmpFinish)
+    if trace[tmp_finish]:
+        # Dựa vào mảng trace, cho tmp_finish "lùi" dần về start
+        while tmp_finish != start:
+            # Trong khi chưa đụng đỉnh start, thì nạp đỉnh tmp_finish vào đường đi
+            path.append(tmp_finish)
             
-            # "Lùi" tmpFinish về đỉnh liền trước đó
-            tmpFinish = trace[tmpFinish]
+            # "Lùi" tmp_finish về đỉnh liền trước đó
+            tmp_finish = trace[tmp_finish]
         
         # Nạp đỉnh start vào đường đi
         path.append(start)
     
     with open(output_file, 'w') as f:
-        # Nếu không có phần tử nào trong stack path
+        # Nếu không có phần tử nào trong ngăn xếp path
         # thì in ra -1, nghĩa là không có đường đi
         if len(path) == 0:
             f.write(str(-1))
@@ -98,7 +94,7 @@ def output():
             f.write(output_path)
 
 
-# Hàm in ra console mảng trace
+# Hàm in ra mảng trace
 def show_trace():
     index_string = ' '.join(str(u).rjust(4) for u in range(1, vertex + 1))
     print(index_string)
@@ -111,5 +107,3 @@ if __name__ == '__main__':
     input_data()
     process()
     output()
-
-    show_trace()

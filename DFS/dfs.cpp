@@ -1,11 +1,10 @@
 #include <iostream>
-#include <fstream>
 #include <vector>
 #include <stack>
 #include <iomanip>
 
-#define inputFile "dfs.inp"
-#define outputFile "dfs.out"
+#define input_file "dfs.inp"
+#define output_file "dfs.out"
 
 using namespace std;
 
@@ -13,127 +12,125 @@ using namespace std;
 int vertex, edge, start, finish;
 
 // danh sách kề
-vector<vector<int>> a;
+vector<vector<int>> A;
 
 // Mảng dùng để truy ngược, trace[u] = v nghĩa là trước đỉnh u là đỉnh v
 vector<int> trace;
 
-void Input()
+void input()
 {
-    ifstream f;
-    f.open(inputFile);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
 
-    f >> vertex >> edge >> start >> finish;
+    freopen(input_file, "r", stdin);
+
+    cin >> vertex >> edge >> start >> finish;
 
     // Khởi tạo danh sách đỉnh kề
-    a.resize(vertex + 1);
+    A.resize(vertex + 1);
 
     int u, v;
     
-    // Đọc từng dòng và nạp các đỉnh vào hàng a[u] tương ứng
-    // Hàng a[u] chứa các đỉnh v kề với đỉnh u
-    for (int i = 1; i < edge + 1; ++i)
+    // Đọc từng dòng và nạp các đỉnh vào hàng A[u] tương ứng
+    // Hàng A[u] chứa các đỉnh v kề với đỉnh u
+    for (int i = 0; i < edge; ++i)
     {
-        f >> u >> v;
-        a[u].push_back(v);
+        cin >> u >> v;
+        A[u].push_back(v);
     }
-
-    f.close();
 }
 
-// Hàm khởi tạo
-void Init()
+
+void init()
 {
-    // Khởi tạo mảng trace gồm toàn 0, nghĩa là các đỉnh trong trace đều chưa có đỉnh liền trước
+    // Khởi tạo mảng trace gồm toàn 0, nghĩa là tất cả đỉnh đều chưa có đỉnh liền trước
     trace.resize(vertex + 1, 0);
     
     // Trước đỉnh start không có đỉnh nào
     trace[start] = -1;
 }
 
-// Hàm Dfs thực hiện đệ quy, xem current là đỉnh gốc
-void Dfs(int current)
+
+void dfs(int current)
 {
     // Duyệt các đỉnh kề với đỉnh current
-    for (vector<int>::iterator i = a[current].begin(); i != a[current].end(); ++i)
+    for (vector<int>::iterator i = A[current].begin(); i != A[current].end(); ++i)
     {
         // Nếu đỉnh *i chưa ghé thăm thì đánh dấu ghé thăm *i bằng mảng trace
-        // rồi xem *i là đỉnh gốc, gọi đệ quy tiếp từ đỉnh *i
+        // rồi xem *i là đỉnh gốc, gọi đệ quy đối với đỉnh *i
         if (!trace[*i])
         {
             trace[*i] = current;
-            Dfs(*i);
+            dfs(*i);
         }
     }
 }
 
-// Hàm Process tổng hợp các thao tác cần thực hiện
-void Process()
+
+void process()
 {
     // Khởi tạo mảng trace
-    Init();
+    init();
 
     // Thực hiện duyệt theo chiều sâu, xuất phát từ đỉnh start
-    Dfs(start);
+    dfs(start);
 }
 
-// Hàm in kết quả ra file
-void Output()
+
+void output()
 {
-    // Khai báo stack path lưu các đỉnh của đường đi cần tìm
+    // Khai báo ngăn xếp path lưu các đỉnh của đường đi cần tìm
     stack<int> path; 
 
-    // Dùng tmpFinish để không làm mất giá trị của finish khi truy ngược
-    int tmpFinish = finish;
+    // Dùng tmp_finish để không làm mất giá trị của finish khi truy ngược
+    int tmp_finish = finish;
 
     // Nếu có đường đi đến đỉnh finish thì mới thực hiện truy ngược trace
-    if (trace[tmpFinish])
+    if (trace[tmp_finish])
     {
-        // Dựa vào mảng trace, cho tmpFinish "lùi" dần về start
-        while (tmpFinish != start)
+        // Dựa vào mảng trace, cho tmp_finish "lùi" dần về start
+        while (tmp_finish != start)
         {
-            // Trong khi chưa đụng đỉnh start, thì nạp đỉnh tmpFinish vào đường đi
-            path.push(tmpFinish);
+            // Trong khi chưa đụng đỉnh start, thì nạp đỉnh tmp_finish vào đường đi
+            path.push(tmp_finish);
 
-            // "Lùi" tmpFinish về đỉnh liền trước đó
-            tmpFinish = trace[tmpFinish];
+            // "Lùi" tmp_finish về đỉnh liền trước đó
+            tmp_finish = trace[tmp_finish];
         }
 
         // Nạp đỉnh start vào đường đi
         path.push(start);
     }
+    
+    freopen(output_file, "w", stdout);
 
-    ofstream f;
-    f.open(outputFile);    
-
-    // Nếu không có phần tử nào trong stack path
+    // Nếu không có phần tử nào trong ngăn xếp path
     // thì in ra -1, nghĩa là không có đường đi
     if (path.empty())
     {
-        f << -1;
+        cout << -1;
     }
     else
     {
-        // Trong khi stack path vẫn còn phần tử
+        // Trong khi ngăn xếp path vẫn còn phần tử
         while (!path.empty())
         {
-            // thì in ra phần tử nằm ở đầu stack
-            f << path.top();
+            // thì in ra phần tử nằm ở đầu ngăn xếp
+            cout << path.top();
 
-            // nếu stack path còn hơn một phần tử thì in dấu phân cách
+            // nếu ngăn xếp path còn hơn một phần tử thì in dấu phân cách
             if (path.size() != 1)
-                f << " --> ";
+                cout << " --> ";
             
-            // rồi xóa bỏ phần tử đầu stack này
+            // rồi xóa bỏ phần tử đầu ngăn xếp này
             path.pop();
         }
     }
-
-    f.close();
 }
 
-// Hàm in ra console mảng trace
-void ShowTrace()
+
+// Hàm in ra mảng trace
+void show_trace()
 {
     for (int u = 1; u < vertex + 1; ++u)
     {
@@ -150,11 +147,9 @@ void ShowTrace()
 
 int main()
 {
-    Input();
-    Process();
-    Output();
-
-    ShowTrace();
+    input();
+    process();
+    output();
 
     return 0;
 }

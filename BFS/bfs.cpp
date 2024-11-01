@@ -33,7 +33,7 @@ void input()
     
     // Đọc từng dòng và nạp các đỉnh vào hàng A[u] tương ứng
     // Hàng A[u] chứa các đỉnh v kề với đỉnh u
-    for (int i = 1; i < edge + 1; ++i)
+    for (int i = 0; i < edge; ++i)
     {
         cin >> u >> v;
         A[u].push_back(v);
