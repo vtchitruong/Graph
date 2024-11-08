@@ -66,6 +66,9 @@ void bfs()
         // thì gán phần tử nằm ở đầu hàng đợi q vào biến tạm current
         current = q.front();
 
+        // và xóa bỏ phần tử nằm ở đầu hàng đợi q, là đỉnh current
+        q.pop();
+
         // Duyệt các đỉnh kề với đỉnh current
         for (vector<int>::iterator i = A[current].begin(); i != A[current].end(); ++i)
         {
@@ -78,9 +81,6 @@ void bfs()
                 
             }
         }
-
-        // Xóa bỏ phần tử nằm ở đầu hàng đợi q, là đỉnh current
-        q.pop();
     }
 }
 
