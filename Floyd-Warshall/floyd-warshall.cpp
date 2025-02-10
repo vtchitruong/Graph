@@ -21,6 +21,7 @@ void input()
     cin.tie(NULL);
 
     freopen(input_file, "r", stdin);
+    
     cin >> number_of_vertices >> number_of_edges >> start >> finish;
 
     graph.resize(number_of_vertices + 1, vector<int>(number_of_vertices + 1, 1e9));
