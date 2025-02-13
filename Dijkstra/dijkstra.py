@@ -4,46 +4,52 @@ import sys
 input_file = os.path.join(sys.path[0], 'dijkstra.inp')
 output_file = os.path.join(sys.path[0], 'dijkstra.out')
 
-# số đỉnh, số cạnh, đỉnh xuất phát, đỉnh đích
-vertex, edge, start, finish = 0, 0, 0, 0
+number_of_number_of_vertices, number_of_number_of_edges, start, finish = 0, 0, 0, 0
+
+# Mảng D dùng để lưu khoảng cách ngắn nhất từ đỉnh start đến các đỉnh khác
+# D[v] = d nghĩa là: khoảng cách ngắn nhất từ đỉnh start đến đỉnh v là d
+D = []
+
+# Mảng trace dùng để lưu vết đường đi
+# trace[v] = u nghĩa là: u -> v
+trace = []
 
 INF = float('inf')
 
-
 def input_data():
-    with open(input_file) as f:
-        global vertices, edges, start, finish
-        vertices, edges, start, finish = list(map(int, f.readline().split()))
+    global number_of_vertices, number_of_edges, start, finish, graph
 
-        global graph
-        graph = [[] for row in range(vertices + 1)]
-        for i in range(edges):
+    with open(input_file, 'r') as f:        
+        number_of_vertices, number_of_edges, start, finish = list(map(int, f.readline().split()))
+
+        graph = [[] for row in range(number_of_vertices + 1)]
+        for i in range(number_of_edges):
             u, v, weight = list(map(int, f.readline().split()))
             graph[u].append((v, weight))
 
 
-def init():    
-    # d[v] là khoảng cách ngắn nhất từ start đến v
-    global d # distance
-    d = [INF for _ in range(vertices + 1)]
-    d[start] = 0
-
-    # trace[v] = u nghĩa là trước đỉnh v là đỉnh u
-    global trace
-    trace = [0 for _ in range(vertices + 1)]
-
-
 def dijkstra():
-    # Khai báo list q, mỗi phần tử là một tuple
+    global graph, D, trace
+    
+    # Khởi tạo mảng khoảng cách D
+    D = [INF] * (number_of_vertices + 1)
+    D[start] = 0;
+
+    # Khởi tạo mảng trace
+    trace = [-1] * (number_of_vertices + 1)
+
+    # Biến q có kiểu list, mỗi phần tử là một tuple
     # với tuple[0] là khoảng cách d, tuple[1] là đỉnh v.
-    # Nghĩa là, tại đỉnh v, khoảng cách ngắn nhất từ start đến v là d.
+    # Nghĩa là, tại đỉnh v, khoảng cách ngắn nhất từ start đến đỉnh v là d.
     q = []
     q.append((0, start))
 
-    global graph, d
-    while not len(q) == 0:
-        # Xét đỉnh u của phần tử có d_u nhỏ nhất
+    # Trong khi q vẫn còn phần tử
+    while q:
+        # Lấy phần tử có giá trị D[u] nhỏ nhất
         min_element = min(q, key=lambda x: x[0])
+
+        # Lấy ra đỉnh u có khoảng cách ngắn nhất từ start
         u = min_element[1]
         d_u = min_element[0]
         q.remove((d_u, u))
@@ -52,50 +58,67 @@ def dijkstra():
         if u == finish:
             break
 
-        # Duyệt các đỉnh kề với đỉnh u
+        # Duyệt từng đỉnh v kề với đỉnh u
         for i in range(len(graph[u])):
+            # v là đỉnh kề với u
             v = graph[u][i][0]
+
+            # w là trọng số của cạnh u -> v
             w = graph[u][i][1]
 
-            if d[u] + w < d[v]:
-                # Xóa phần tử có giá trị d[v] trong hàng đợi
-                if (d[v], v) in q:
-                    q.remove((d[v], v))
+            # Nếu có thể đi start -> u -> v nhanh hơn so với start -> v
+            if D[u] + w < D[v]:
+                # Nếu v đã có trong hàng đợi thì xoá phần tử liên quan
+                if (D[v], v) in q:
+                    q.remove((D[v], v))
 
-                # Lưu khoảng cách ngắn nhất mới
-                d[v] = d[u] + w
+                # Cập nhật lại khoảng cách ngắn nhất từ đỉnh start đến đỉnh v
+                D[v] = D[u] + w
                 
-                # Lưu vết
+                # Lưu vết đường đi từ start đến v thông qua u
                 trace[v] = u
                 
-                # Thêm vào hàng đợi
-                q.append((d[v], v))
+                # Thêm vào q
+                q.append((D[v], v))
 
 
 def output():
-    
-    path = list()
-    global d
-    if not d[finish] == INF:
-        fn = finish # biến tạm
+    global D, trace, start, finish
 
-        # Dựa vào mảng trace, cho fn "lùi" dần về start
-        while not fn == start:
-            path.append(fn)
-            fn = trace[fn]
-        
-        path.append(start)
+    # Nếu không có đường đi từ đỉnh start đến đỉnh finish
+    if D[finish] == INF:
+        with open(output_file, 'w') as f:
+            f.write('No path found')
+        return
+
+    # Ngược lại, có đuờng đi từ start đến finish, thì dựa vào mảng trace để truy vết đường đi
+    path = list()
+    
+    # Biến tạm fn để lưu đỉnh hiện hành
+    fn = finish
+
+    # Trong khi fn chưa về đến đỉnh start
+    while not fn == start:
+        # Thêm đỉnh fn vào đường đi
+        path.append(fn)
+
+        # Lùi về đỉnh trước đó
+        fn = trace[fn]
+    
+    # Thêm đỉnh start vào đường đi
+    path.append(start)
     
     with open(output_file, 'w') as f:
-        f.write(f'{d[finish]}\n')
+        # In ra khoảng cách ngắn nhất từ đỉnh start đến đỉnh finish
+        f.write(f'{D[finish]}\n')
 
+        # In ra đường đi ngắn nhất từ đỉnh start đến đỉnh finish
         output_path = ' '.join([str(v) for v in reversed(path)])
         f.write(output_path)
 
 
 if __name__ == '__main__':
     input_data()
-    init()
     dijkstra()
     output()
     
